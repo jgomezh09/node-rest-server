@@ -3,13 +3,20 @@ const bcrypt = require('bcryptjs');
 const _ = require('underscore');
 
 const Usuario = require('../models/usuario');
+const { verificaToken, verificaRolAdmin } = require('../middlewares/autenticacion');
 
 
 const app = express();
 
 
 
-app.get('/usuario', function(req, res) {
+app.get('/usuario', verificaToken, function(req, res) {
+
+    // return res.json({              //Así se obtienen los datos del token
+    //     usuario: req.usuario,
+    //     nombre: req.usuario.nombre,
+    //     email: req.usuario.email
+    // })
 
     let desde = req.query.desde || 0; //los parametros opcionales caen por un metodo llamado query
     desde = Number(desde);
@@ -17,7 +24,7 @@ app.get('/usuario', function(req, res) {
     let limite = req.query.limite || 5;
     limite = Number(limite);
 
-    Usuario.find({ estado: true }, 'nombre email role estado google img') //Usuario.find({ nombre: "Jonathan5" })   pasar condiciones
+    Usuario.find({}, 'nombre email role estado google img') //Usuario.find({ nombre: "Jonathan5" })   pasar condiciones
         .skip(desde)
         .limit(limite)
         .exec((err, usuarios) => {
@@ -28,7 +35,7 @@ app.get('/usuario', function(req, res) {
                 })
             }
 
-            Usuario.count({ estado: true }, (err, conteo) => { // Usuario.count({ nombre: "Jonathan5" }, (err, conteo) => {
+            Usuario.count({}, (err, conteo) => { // Usuario.count({ nombre: "Jonathan5" }, (err, conteo) => {
                 res.json({
                     ok: true,
                     usuarios,
@@ -41,7 +48,7 @@ app.get('/usuario', function(req, res) {
 
 });
 
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verificaToken, verificaRolAdmin], function(req, res) {
     let body = req.body;
 
     let usuario = new Usuario({
@@ -49,7 +56,7 @@ app.post('/usuario', function(req, res) {
         email: body.email,
         password: bcrypt.hashSync(body.password, 10),
         role: body.role
-    })
+    });
 
     usuario.save((err, usuarioDB) => {
 
@@ -59,7 +66,6 @@ app.post('/usuario', function(req, res) {
                 err
             })
         }
-
         // usuarioDB.password = null;
         res.json({
             ok: true,
@@ -69,7 +75,7 @@ app.post('/usuario', function(req, res) {
 });
 
 
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificaToken, verificaRolAdmin], function(req, res) {
     let id = req.params.id;
     //let body = req.body;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']); //En el array campos que se pueden editar
@@ -92,7 +98,9 @@ app.put('/usuario/:id', function(req, res) {
 
 });
 
-app.delete('/usuario/:id', function(req, res) {
+
+
+app.delete('/usuario/:id', [verificaToken, verificaRolAdmin], function(req, res) {
     let id = req.params.id;
 
     let cambiaEstado = {

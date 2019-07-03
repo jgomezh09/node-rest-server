@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
 let rolesValidos = {
-    values: ['ADMIL_ROLE', 'USER_ROLE'],
+    values: ['ADMIN_ROLE', 'USER_ROLE'],
     message: '{VALUE} no es un rol valido'
 };
 
@@ -39,6 +39,10 @@ let usuarioSchema = new Schema({
     goole: {
         type: Boolean,
         required: false
+    },
+    creado: {
+        type: Date,
+        default: Date.now
     }
 
 })
@@ -50,6 +54,6 @@ usuarioSchema.methods.toJSON = function() { //Ojo no utilizar funcion flecha par
     return userObject;
 }
 
-usuarioSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' })
+usuarioSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
 
-module.exports = mongoose.model('Usuario', usuarioSchema); // quiero que se llame Usuario y va a tener toda la configuracion de usuarioSchema
+module.exports = mongoose.model('Usuario', usuarioSchema); // quiero que se llame Usuario y va a tener toda la configuración de usuarioSchema
