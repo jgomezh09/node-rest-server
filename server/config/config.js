@@ -31,10 +31,10 @@ process.env.SEED = process.env.SEED || 'este-es-el-seed-desarrollo';
 
 let urlDB;
 
-//if (process.env.NODE_ENV === 'dev') {
-urlDB = 'mongodb://localhost:27017/tramites';
-//} else {
-//  urlDB = 'mongodb+srv://jgomezh:DoJVGWSIV2uj5YcJ@cluster0-dhurk.mongodb.net/cafe';
-//}
+if (process.env.NODE_ENV === 'dev') {
+    urlDB = 'mongodb://localhost:27017/tramites';
+} else {
+    urlDB = 'mongodb+srv://jgomezh:DoJVGWSIV2uj5YcJ@cluster0-dhurk.mongodb.net/cafe';
+}
 
 process.env.URLDB = urlDB;
