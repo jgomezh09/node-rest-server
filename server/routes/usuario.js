@@ -80,7 +80,7 @@ app.put('/usuario/:id', [verificaToken, verificaRolAdmin], function(req, res) {
     //let body = req.body;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']); //En el array campos que se pueden editar
 
-    Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, usuarioDB) => {
+    Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: false }, (err, usuarioDB) => {
         if (err)
             return res.status(400).json({
                 ok: false,
