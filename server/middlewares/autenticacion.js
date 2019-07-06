@@ -6,7 +6,30 @@ const jwt = require('jsonwebtoken');
 //========================================
 
 let verificaToken = (req, res, next) => {
-    let token = req.get('token'); //leer heder
+    let token = req.get('token'); //leer header
+
+    jwt.verify(token, process.env.SEED, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({
+                ok: false,
+                err: {
+                    message: "Token invalido"
+                }
+            })
+        }
+
+        req.usuario = decoded.usuario;
+        next();
+    })
+
+}
+
+//=======================================
+//Verificar TokenImagen   video 123
+//========================================
+
+let verificaTokenImg = (req, res, next) => {
+    let token = req.query.token;
 
     jwt.verify(token, process.env.SEED, (err, decoded) => {
         if (err) {
@@ -51,5 +74,6 @@ let verificaRolAdmin = (req, res, next) => {
 
 module.exports = {
     verificaToken,
-    verificaRolAdmin
+    verificaRolAdmin,
+    verificaTokenImg
 }
